@@ -5,23 +5,24 @@ const rp = require('request-promise');
 let dataPath = path.join(__dirname, './downloads/');
 
 rp('https://reddit.com/r/popular.json')
-.then(res => JSON.parse(res))
-.then(body => {
-    body.data.children.forEach(item => {
-        
-        let fileName = item.data.id;
-        let extName = path.extname(item.data.url);
-        let writeName = fileName + extName;
+    .then(res => JSON.parse(res))
+    .then(body => {
+        body.data.children.forEach(item => {
 
-        if(extName) {
-            rp(item.data.url, { encoding: 'binary' })
-            .then(data => {
-                fs.writeFile(writeName, data, { encoding: 'binary' }, (err) => {
-                    if (err) console.log(err);
-                }).pipe(fs.createWriteStream(dataPath, writeName));
-            })
-        };
+            let fileName = item.data.id;
+            let extName = path.extname(item.data.url);
+            let writeName = fileName + extName;
 
-    });
-})
-.catch(err => console.log(err));
+            if (extName) {
+                rp(item.data.url, { encoding: 'binary' })
+                .then(() => {
+                    let dataFilePath = path.join(dataPath, writeName);
+                    fs.createWriteStream(dataFilePath, { encoding: 'binary' }, writeName, (err) => {
+                        if (err) console.log(err);
+                    });
+                })
+            };
+
+        });
+    })
+    .catch(err => console.log(err));
