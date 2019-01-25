@@ -15,9 +15,9 @@ rp('https://reddit.com/r/popular.json')
 
             if (extName) {
                 rp(item.data.url, { encoding: 'binary' })
-                .then(() => {
+                .then((media) => {
                     let dataFilePath = path.join(dataPath, writeName);
-                    fs.createWriteStream(dataFilePath, { encoding: 'binary' }, writeName, (err) => {
+                    fs.writeFile(dataFilePath, media, { encoding: 'binary' }, (err) => {
                         if (err) console.log(err);
                     });
                 })
